@@ -651,6 +651,22 @@ body.editing .photo-admin-row{display:flex;}
 }
 </style>
 
+
+<style id="v62-mobile-chat-open-fix">
+/* v62: tapping the cow opens the chat at normal page scale, without summoning the keyboard. */
+@media(max-width:900px){
+  #chatPanel.chat-panel{
+    width:calc(100vw - 24px)!important;
+    max-width:calc(100vw - 24px)!important;
+    left:auto!important;
+    right:12px!important;
+  }
+  #chatPanel .chat-form input{
+    font-size:16px!important; /* prevents iOS auto-zoom on focus */
+  }
+}
+</style>
+
 </head><body>
 <aside class="sidebar" id="sidebar"><a aria-label="Return to Home" class="lab-abbr brand-home" href="#home">SMWU NEDA</a><nav class="nav"> <a class="active" href="#home">Home</a><a href="#professor">Professor</a><a href="#members">Members</a><a href="#alumni">Alumni</a><a href="#research">Research</a><a href="#publications">Publications</a><a href="#projects">Projects</a><a href="#photo">Photo</a><a href="#contact">Contact / Location</a></nav><div class="sidefoot"></div></aside>
 <div class="main"><div class="mobilebar"><b>NEDA Lab</b><button class="menubtn" id="menubtn">☰</button></div>
@@ -752,7 +768,7 @@ const chatText={
  ko:{title:'NEDA 연구실 도우미',subtitle:'연구실에 관해 물어보세요',toggle:'English',welcome:'안녕하세요! 🐮✨\nNEDA 연구실에 오신 것을 환영합니다. 무엇이 궁금하신가요?',placeholder:'질문을 입력하세요...',send:'전송',quick:{location:'위치',contact:'연락처'},answers:{location:'연구실은 숙명여자대학교 순헌관 306호에 있습니다.',contact:'이메일: smwu.neda.lab@gmail.com'},fallback:'그 외 문의는 NEDA 연구실 카카오톡 채널에서 이어서 질문해 주세요.',kakao:'카카오톡으로 문의하기',kakaoDirect:'카카오톡 채널에서 계속 문의하기'}
 };
 function applyChatLanguage(){const x=chatText[chatLang];document.getElementById('chatTitle').textContent=x.title;document.getElementById('chatSubtitle').textContent=x.subtitle;chatLangBtn.textContent=x.toggle;chatInput.placeholder=x.placeholder;document.getElementById('chatSend').textContent=x.send;document.querySelectorAll('#chatQuick button').forEach(b=>b.textContent=x.quick[b.dataset.key]);const kakaoDirect=document.getElementById('chatKakaoDirect');if(kakaoDirect)kakaoDirect.textContent=x.kakaoDirect;const welcome=document.getElementById('chatWelcome');if(welcome)welcome.textContent=x.welcome}
-function setChat(open){chatPanel.classList.toggle('open',open);chatPanel.setAttribute('aria-hidden',open?'false':'true');assistantBtn.classList.toggle('active',open);document.getElementById('bubble').style.display=open?'none':'block';if(open)setTimeout(()=>chatInput.focus(),50)}
+function setChat(open){chatPanel.classList.toggle('open',open);chatPanel.setAttribute('aria-hidden',open?'false':'true');assistantBtn.classList.toggle('active',open);document.getElementById('bubble').style.display=open?'none':'block';if(open){chatInput.blur();const msgs=document.getElementById('chatMessages');if(msgs)msgs.scrollTop=0}}
 function addChatMessage(answer,type){const el=document.createElement('div');el.className='chat-msg '+type;if(typeof answer==='string'){el.textContent=answer}else{el.textContent=answer.text;if(answer.kakao){const a=document.createElement('a');a.href=KAKAO_CHANNEL_URL;a.target='_blank';a.rel='noopener';a.textContent=chatText[chatLang].kakao;a.onclick=e=>{if(KAKAO_CHANNEL_URL.includes('_YOUR_CHANNEL_ID')){e.preventDefault();alert(chatLang==='ko'?'카카오톡 채널 주소가 아직 등록되지 않았습니다. 채널을 만든 뒤 코드의 KAKAO_CHANNEL_URL을 교체해 주세요.':'The KakaoTalk Channel URL has not been added yet. Replace KAKAO_CHANNEL_URL after creating the channel.')}};el.appendChild(document.createElement('br'));el.appendChild(a)}}chatMessages.appendChild(el);chatMessages.scrollTop=chatMessages.scrollHeight}
 function labAnswer(q){
  const t=String(q||'').toLowerCase().replace(/[?!.\s]/g,'');
