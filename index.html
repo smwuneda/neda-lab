@@ -19,7 +19,7 @@
 .footer p{max-width:1180px;margin:0 auto 10px;padding:0 34px}
 .footer p:last-child{margin-bottom:0}
 @media(max-width:900px){.footer p{padding:0 24px}}
-@media(max-width:900px){:root{--side:0px}.sidebar{transform:translateX(-100%);transition:.25s;width:285px}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobilebar{display:flex;position:sticky;top:0;z-index:40;height:64px;background:#fff;border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;padding:0 18px}.menubtn{border:0;background:#fff;font-size:24px}.wrap{padding:0 24px}.hero{grid-template-columns:1fr;min-height:auto;padding:72px 0}.hero h1{font-size:40px}.profile{grid-template-columns:1fr}.portrait{max-width:340px}.cards,.project-grid,.photo-grid,.contact{grid-template-columns:1fr 1fr}.assistant{width:72px}.bubble{display:none}}@media(max-width:560px){.cards,.project-grid,.photo-grid,.contact{grid-template-columns:1fr}.member{grid-template-columns:1fr}.member-photo{min-height:250px;border-right:0;border-bottom:2px dashed #9ec7ff}.member-info{padding:24px}.time{grid-template-columns:1fr;gap:2px}.hero h1{font-size:34px}.title{font-size:32px}}
+@media(max-width:900px){:root{--side:0px}.sidebar{transform:translateX(-100%);transition:.25s;width:285px}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobilebar{display:flex;position:sticky;top:0;z-index:40;height:64px;background:#fff;border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;padding:0 18px}.menubtn{border:0;background:#fff;font-size:24px}.wrap{padding:0 24px}.hero{grid-template-columns:1fr;min-height:auto;padding:72px 0}.hero h1{font-size:40px}.profile{grid-template-columns:1fr}.portrait{max-width:340px}.cards,.project-grid,.photo-grid,.contact{grid-template-columns:1fr 1fr}.assistant{width:72px}.bubble{display:block}}@media(max-width:560px){.cards,.project-grid,.photo-grid,.contact{grid-template-columns:1fr}.member{grid-template-columns:1fr}.member-photo{min-height:250px;border-right:0;border-bottom:2px dashed #9ec7ff}.member-info{padding:24px}.time{grid-template-columns:1fr;gap:2px}.hero h1{font-size:34px}.title{font-size:32px}}
 
 /* On-page editor restored from the previous version */
 .edit-fab{position:fixed;right:120px;bottom:18px;z-index:120;border:1px solid #d9deea;background:#fff;color:var(--navy);border-radius:999px;padding:10px 15px;font:700 12px Inter,sans-serif;box-shadow:0 10px 28px rgba(8,23,70,.14);cursor:pointer}
@@ -53,7 +53,7 @@ body.editing .assistant{display:block!important;visibility:visible!important;opa
 .chat-quick{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px;background:#f7f9fc}.chat-quick button{border:1px solid #d6dcef;background:#fff;color:var(--navy);border-radius:999px;padding:7px 10px;font-size:11px;cursor:pointer}.chat-quick button:hover{background:#eef2ff}
 .chat-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}.chat-form input{flex:1;min-width:0;border:1px solid #d7dce7;border-radius:999px;padding:10px 13px;font:inherit;font-size:13px;outline:none}.chat-form input:focus{border-color:var(--accent)}.chat-form button{border:0;background:var(--navy);color:#fff;border-radius:999px;padding:0 15px;font-weight:700;cursor:pointer}
 .assistant.active{animation:none;transform:translateY(-3px)}
-@media(max-width:560px){.chat-panel{right:12px;bottom:105px;width:calc(100vw - 24px);height:62vh}.assistant{right:10px;bottom:14px}.bubble{display:none!important}}
+@media(max-width:560px){.chat-panel{right:12px;bottom:105px;width:calc(100vw - 24px);height:62vh}.assistant{right:10px;bottom:14px}.bubble{display:block}}
 
 /* v27: restrained university branding, project timeline, five editable photo entries, and a unified footer */
 .sidebar-wordmark{width:100%;max-width:200px;height:auto;object-fit:contain;margin:0 0 18px}
@@ -250,7 +250,7 @@ body.editing .photo-admin-row{display:flex;}
 .photo-modal-submit{background:var(--navy);color:#fff;}
 .photo-modal-help{font-size:11px;color:var(--muted);margin:12px 0 0;}
 @media(max-width:900px){#bubble.bubble{right:88px !important;}.photo-board{grid-template-columns:1fr;}}
-@media(max-width:560px){#bubble.bubble{display:none!important;}}
+@media(max-width:560px){#bubble.bubble{display:block;}}
 </style>
 <style id="v49-cow-position-only">
 /* v49: position-only adjustment — move the AI cow slightly upward. */
@@ -557,27 +557,31 @@ body.editing .photo-admin-row{display:flex;}
 }
 </style>
 
-<style id="v60-mobile-responsive-fix">
-/* v60: mobile Research-at-a-Glance layout + speech-bubble fix */
+
+
+
+<style id="v61-mobile-kakao-fix">
+/* v61: robust mobile/Kakao in-app browser layout and bubble behavior */
 @media(max-width:900px){
-  html,body{max-width:100%;overflow-x:hidden}
+  html,body{max-width:100%;overflow-x:hidden!important}
   #home .wrap{width:100%;max-width:100%}
 
+  /* Always use one full-width column on mobile and in-app browsers. */
   #home .research-map-stage{
     position:relative!important;
     display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-columns:minmax(0,1fr)!important;
     gap:14px!important;
     width:100%!important;
     max-width:100%!important;
     height:auto!important;
-    margin:24px 0 0!important;
+    margin:22px 0 0!important;
   }
-
   #home .research-map-lines{display:none!important}
 
   #home .research-map-core,
-  #home .research-map-node{
+  #home .research-map-node,
+  #home .node-methods{
     position:static!important;
     inset:auto!important;
     left:auto!important;
@@ -585,6 +589,7 @@ body.editing .photo-admin-row{display:flex;}
     top:auto!important;
     bottom:auto!important;
     transform:none!important;
+    grid-column:1!important;
     width:100%!important;
     max-width:100%!important;
     min-width:0!important;
@@ -594,52 +599,41 @@ body.editing .photo-admin-row{display:flex;}
   }
 
   #home .research-map-core{
-    grid-column:1/-1!important;
-    min-height:150px!important;
+    min-height:145px!important;
     border-radius:18px!important;
-    padding:28px 20px!important;
+    padding:26px 18px!important;
   }
-
-  #home .node-methods{grid-column:1/-1!important}
-}
-
-@media(max-width:560px){
-  #home .wrap{
-    padding-left:18px!important;
-    padding-right:18px!important;
-  }
-
-  #home .research-map{padding:50px 0 58px!important}
-
-  #home .research-map-stage{
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:14px!important;
-    margin-top:20px!important;
-  }
-
-  #home .research-map-core,
-  #home .research-map-node,
-  #home .node-methods{
-    grid-column:1!important;
-    width:100%!important;
-  }
-
-  #home .research-map-core{min-height:145px!important}
 
   #home .research-map-node{
     padding:20px 18px!important;
     border-radius:15px!important;
   }
-
   #home .research-map-node h3{
     font-size:21px!important;
     line-height:1.35!important;
-    margin:0 0 8px!important;
+    overflow-wrap:anywhere;
   }
-
   #home .research-map-node p{
     font-size:14px!important;
     line-height:1.6!important;
+    overflow-wrap:anywhere;
+  }
+
+  /* Speech bubble is visible by default on mobile.
+     JS inline display:none still hides it while the chat panel is open. */
+  #bubble.bubble{
+    display:block;
+    position:fixed!important;
+    right:86px!important;
+    bottom:92px!important;
+    width:max-content!important;
+    max-width:122px!important;
+    padding:7px 9px!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+    border-radius:12px 12px 3px 12px!important;
+    z-index:9998!important;
+    white-space:normal!important;
   }
 
   #assistant.assistant{
@@ -647,20 +641,13 @@ body.editing .photo-admin-row{display:flex;}
     right:10px!important;
     bottom:34px!important;
   }
-
   #assistant.assistant img{width:72px!important}
+}
 
-  /* Visible on mobile while chat is closed; hidden again when JS sets display:none. */
-  #bubble.bubble[style*="display: block"]{
-    display:block!important;
-    right:88px!important;
-    bottom:94px!important;
-    width:max-content!important;
-    max-width:118px!important;
-    padding:7px 9px!important;
-    font-size:11px!important;
-    line-height:1.35!important;
-  }
+@media(max-width:560px){
+  #home .wrap{padding-left:18px!important;padding-right:18px!important}
+  #home .research-map{padding:50px 0 58px!important}
+  #bubble.bubble{right:84px!important;bottom:90px!important}
 }
 </style>
 
