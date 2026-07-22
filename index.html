@@ -556,6 +556,114 @@ body.editing .photo-admin-row{display:flex;}
   border-radius:12px 12px 3px 12px !important;
 }
 </style>
+
+<style id="v60-mobile-responsive-fix">
+/* v60: mobile Research-at-a-Glance layout + speech-bubble fix */
+@media(max-width:900px){
+  html,body{max-width:100%;overflow-x:hidden}
+  #home .wrap{width:100%;max-width:100%}
+
+  #home .research-map-stage{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    margin:24px 0 0!important;
+  }
+
+  #home .research-map-lines{display:none!important}
+
+  #home .research-map-core,
+  #home .research-map-node{
+    position:static!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    box-sizing:border-box!important;
+  }
+
+  #home .research-map-core{
+    grid-column:1/-1!important;
+    min-height:150px!important;
+    border-radius:18px!important;
+    padding:28px 20px!important;
+  }
+
+  #home .node-methods{grid-column:1/-1!important}
+}
+
+@media(max-width:560px){
+  #home .wrap{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+
+  #home .research-map{padding:50px 0 58px!important}
+
+  #home .research-map-stage{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+    margin-top:20px!important;
+  }
+
+  #home .research-map-core,
+  #home .research-map-node,
+  #home .node-methods{
+    grid-column:1!important;
+    width:100%!important;
+  }
+
+  #home .research-map-core{min-height:145px!important}
+
+  #home .research-map-node{
+    padding:20px 18px!important;
+    border-radius:15px!important;
+  }
+
+  #home .research-map-node h3{
+    font-size:21px!important;
+    line-height:1.35!important;
+    margin:0 0 8px!important;
+  }
+
+  #home .research-map-node p{
+    font-size:14px!important;
+    line-height:1.6!important;
+  }
+
+  #assistant.assistant{
+    width:72px!important;
+    right:10px!important;
+    bottom:34px!important;
+  }
+
+  #assistant.assistant img{width:72px!important}
+
+  /* Visible on mobile while chat is closed; hidden again when JS sets display:none. */
+  #bubble.bubble[style*="display: block"]{
+    display:block!important;
+    right:88px!important;
+    bottom:94px!important;
+    width:max-content!important;
+    max-width:118px!important;
+    padding:7px 9px!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+  }
+}
+</style>
+
 </head><body>
 <aside class="sidebar" id="sidebar"><a aria-label="Return to Home" class="lab-abbr brand-home" href="#home">SMWU NEDA</a><nav class="nav"> <a class="active" href="#home">Home</a><a href="#professor">Professor</a><a href="#members">Members</a><a href="#alumni">Alumni</a><a href="#research">Research</a><a href="#publications">Publications</a><a href="#projects">Projects</a><a href="#photo">Photo</a><a href="#contact">Contact / Location</a></nav><div class="sidefoot"></div></aside>
 <div class="main"><div class="mobilebar"><b>NEDA Lab</b><button class="menubtn" id="menubtn">☰</button></div>
