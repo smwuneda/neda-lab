@@ -298,6 +298,21 @@ body.editing .photo-admin-row{display:flex;}
 
 </style>
 
+
+<style id="v51-public-site-mode">
+#editFab,
+#editToolbar{
+  display:none !important;
+}
+.photo-upload{
+  cursor:default !important;
+}
+.photo-upload::after,
+.member-photo .photo-hint{
+  display:none !important;
+}
+</style>
+
 </head><body>
 <aside class="sidebar" id="sidebar"><a aria-label="Return to Home" class="lab-abbr brand-home" href="#home">SMWU NEDA</a><nav class="nav"> <a class="active" href="#home">Home</a><a href="#professor">Professor</a><a href="#members">Members</a><a href="#alumni">Alumni</a><a href="#research">Research</a><a href="#publications">Publications</a><a href="#projects">Projects</a><a href="#photo">Photo</a><a href="#contact">Contact / Location</a></nav><div class="sidefoot"></div></aside>
 <div class="main"><div class="mobilebar"><b>NEDA Lab</b><button class="menubtn" id="menubtn">☰</button></div>
@@ -433,10 +448,7 @@ function loadProfilePhotos(){
   });
 }
 function openProfilePicker(box){
-  if(document.body.classList.contains('editing'))return;
-  activePhotoBox=box;
-  profilePhotoPicker.value='';
-  profilePhotoPicker.click();
+  return;
 }
 function resizeProfilePhoto(file){
   return new Promise((resolve,reject)=>{
@@ -508,7 +520,7 @@ function normalizeMemberKeywordFields(){
     spans.slice(0,-1).forEach(el=>el.remove());
   });
 }
-const savedMainHTML=localStorage.getItem(SITE_STORAGE_KEY);
+localStorage.removeItem(SITE_STORAGE_KEY); const savedMainHTML=null;
 if(savedMainHTML){mainEl.innerHTML=savedMainHTML;normalizeMemberKeywordFields();show();bindPageControls();}
 else{normalizeMemberKeywordFields();}
 loadProfilePhotos();
