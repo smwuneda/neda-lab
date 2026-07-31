@@ -218,9 +218,9 @@ body.editing #assistant.assistant{
 .project-feature .project-summary{max-width:980px;margin-bottom:0;}
 
 /* Requested update 3: Google-backed photo board. Unpublished placeholders never appear. */
-.photo-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}
+.photo-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,300px));gap:22px;align-items:start;}
 .photo-post{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
-.photo-post-media{aspect-ratio:16/10;background:#f2f4f8;overflow:hidden;}
+.photo-post-media{width:100%;height:210px;background:#f2f4f8;overflow:hidden;}
 .photo-post-media img{width:100%;height:100%;object-fit:cover;}
 .photo-post-copy{padding:18px 20px 20px;}
 .photo-post-copy h3{font-size:17px;margin:0 0 5px;color:var(--navy2);}
@@ -1083,6 +1083,13 @@ document.getElementById('editorImport').onchange=e=>{const f=e.target.files&&e.t
   const el=id=>document.getElementById(id);
   const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 
+  function formatPostDate(value){
+    if(!value)return '';
+    const raw=String(value);
+    const match=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? `${match[1]}-${match[2]}-${match[3]}` : raw;
+  }
+
   function render(posts,append){
     const board=el('photoBoard'); if(!board)return;
     if(!append)board.innerHTML='';
@@ -1090,7 +1097,7 @@ document.getElementById('editorImport').onchange=e=>{const f=e.target.files&&e.t
       const article=document.createElement('article');
       article.className='photo-post';
       const title=escapeHTML(post.title||'Laboratory News');
-      const date=escapeHTML(post.date||'');
+      const date=escapeHTML(formatPostDate(post.date));
       const description=escapeHTML(post.description||'');
       const imageUrl=escapeHTML(post.imageUrl||'');
       article.innerHTML=`${imageUrl?`<div class="photo-post-media"><img alt="${title}" loading="lazy" decoding="async" src="${imageUrl}"></div>`:''}<div class="photo-post-copy"><h3>${title}</h3>${date?`<span class="photo-post-date">${date}</span>`:''}${description?`<p>${description}</p>`:''}</div>`;
