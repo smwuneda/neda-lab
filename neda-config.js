@@ -1,2 +1,1 @@
-// Paste the deployed Google Apps Script Web App URL between the quotes.
-window.NEDA_APPS_SCRIPT_URL = '';
+window.NEDA_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfgf67t2-HbaRt2bJ6PcY4iGwsdIRjJK7u8qNUx71IteiaPgIVSG3FQcRUOomplwM/exec';
