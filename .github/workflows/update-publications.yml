@@ -1,1 +1,127 @@
+name: Update publications from ORCID
 
+# Pulls Prof. Jane J. Lee's works from ORCID every morning and saves publications_auto.json,
+# which the "Latest Publications" list on the site reads.
+
+on:
+  schedule:
+    - cron: "17 21 * * *"   # every day around 06:17 KST
+  workflow_dispatch:         # "Run workflow" button for a manual update
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch ORCID works
+        run: |
+          python3 - <<'PY'
+          """Fetch Prof. Jane J. Lee's works from the ORCID public API and write publications_auto.json.
+
+          Run by .github/workflows/update-publications.yml every day. No API key is needed.
+          """
+          import json
+          import re
+          import sys
+          import urllib.request
+          from datetime import datetime, timezone, timedelta
+
+          ORCID = "0000-0002-6276-7667"
+          API = f"https://pub.orcid.org/v3.0/{ORCID}/works"
+          OUT = "publications_auto.json"
+          KEEP = 30  # newest N works saved to the file
+          SKIP_TYPES = {"conference-abstract", "conference-poster", "conference-output", "lecture-speech", "other"}
+
+
+          def val(d, *keys):
+              for k in keys:
+                  if not isinstance(d, dict):
+                      return None
+                  d = d.get(k)
+              return d
+
+
+          def summarize(summary):
+              title = (val(summary, "title", "title", "value") or "").strip()
+              year = val(summary, "publication-date", "year", "value") or ""
+              month = val(summary, "publication-date", "month", "value") or "01"
+              doi = None
+              for ext in val(summary, "external-ids", "external-id") or []:
+                  if (ext.get("external-id-type") or "").lower() == "doi":
+                      doi = (ext.get("external-id-value") or "").strip()
+                      doi = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", doi, flags=re.I)
+                      break
+              url = val(summary, "url", "value") or (f"https://doi.org/{doi}" if doi else None)
+              return {
+                  "title": title,
+                  "journal": (val(summary, "journal-title", "value") or "").strip(),
+                  "year": year,
+                  "month": month,
+                  "type": summary.get("type") or "",
+                  "doi": doi,
+                  "url": url,
+              }
+
+
+          def main(raw=None):
+              if raw is None:
+                  req = urllib.request.Request(API, headers={"Accept": "application/json", "User-Agent": "seed-lab-site"})
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      raw = json.load(r)
+
+              works, seen = [], set()
+              for group in raw.get("group", []):
+                  summaries = group.get("work-summary") or []
+                  if not summaries:
+                      continue
+                  w = summarize(summaries[0])
+                  if not w["title"] or w["type"] in SKIP_TYPES or w["title"].lower().startswith("abstract"):
+                      continue
+                  key = (w["doi"] or w["title"]).lower()
+                  if key in seen:
+                      continue
+                  seen.add(key)
+                  works.append(w)
+
+              works.sort(key=lambda w: (w["year"] or "0000", w["month"] or "00"), reverse=True)
+              kst = timezone(timedelta(hours=9))
+              data = {
+                  "orcid": ORCID,
+                  "updated_at": datetime.now(kst).strftime("%Y-%m-%d"),
+                  "total": len(works),
+                  "works": works[:KEEP],
+              }
+
+              # Only rewrite when the list itself changed, so the date doesn't create a commit every day.
+              try:
+                  with open(OUT, encoding="utf-8") as f:
+                      old = json.load(f)
+                  if old.get("works") == data["works"]:
+                      print("No change in ORCID works.")
+                      return 0
+              except (FileNotFoundError, json.JSONDecodeError):
+                  pass
+
+              with open(OUT, "w", encoding="utf-8") as f:
+                  json.dump(data, f, ensure_ascii=False, indent=2)
+              print(f"Wrote {len(data['works'])} of {len(works)} works to {OUT}")
+              return 0
+
+
+          if __name__ == "__main__":
+              sys.exit(main())
+          PY
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain publications_auto.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898183+github-actions[bot]@users.noreply.github.com"
+            git add publications_auto.json
+            git commit -m "Update publications from ORCID"
+            git push
+          else
+            echo "No changes."
+          fi
