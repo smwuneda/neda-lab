@@ -1140,6 +1140,10 @@ section:not(.hero) *{border-radius:0!important;box-shadow:none!important}
 #top.hero > .container{position:relative;z-index:2}
 .hero-net{position:absolute;inset:0;pointer-events:none;z-index:1;width:100%;height:100%}
 </style>
+<script id="seed-data-ko">
+/* Elements with data-ko="..." show that HTML in Korean and their original HTML in English. */
+window.seedApplyKo=function(lang){document.querySelectorAll('[data-ko]').forEach(function(e){if(e.dataset.en===undefined)e.dataset.en=e.innerHTML;e.innerHTML=lang==='ko'?e.dataset.ko:e.dataset.en;});};
+</script>
 </head><body>
 <div class="seed-utility"><div class="u-in"><span class="u-left"><a href="https://www.sookmyung.ac.kr" target="_blank" rel="noopener">Sookmyung Women's University</a> · Department of Food and Nutrition</span><span class="u-right">Seoul, Korea</span></div></div>
 <header><div class="nav-wrap"><a class="brand" href="#top"><span class="brand-copy"><strong>SEED LAB</strong><small><span class="seed-acronym"><strong>S</strong>tatistical <strong>E</strong>pidemiology of <strong>E</strong>xposures &amp; <strong>D</strong>iet</span></small></span></a><button aria-label="Open menu" class="menu-toggle">☰</button><nav aria-label="Primary navigation"><ul><li><a href="#about"><span class="nav-label">About</span></a></li><li class="nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">Research</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu"><a href="#research">Research Areas</a><a href="#projects">Projects</a></div></li><li class="nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">People</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu"><a href="#professor">Professor</a><a href="#members">Members</a><a href="#alumni">Alumni</a></div></li><li><a href="#publications"><span class="nav-label">Publications</span></a></li><li class="nav-dropdown news-nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">News</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu news-dropdown-menu"><a data-news-category="All" href="#news">All News</a><a data-news-category="Announcements" href="#news">Announcements</a><a data-news-category="Awards" href="#news">Awards</a><a data-news-category="Celebrations" href="#news">Celebrations</a><a data-news-category="Events" href="#news">Events</a><a data-news-category="Media" href="#news">Media</a><a data-news-category="Presentations" href="#news">Presentations</a></div></li><li><a href="#contact"><span class="nav-label">Contact</span></a></li></ul></nav><div aria-label="Language" class="language-switch"><button data-lang="ko">KR</button><button class="active" data-lang="en">EN</button></div></div></header>
@@ -1226,6 +1230,7 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
  function apply(lang,save=true){
   originals.forEach(o=>{if(!o.n.isConnected)return;const lead=(o.raw.match(/^\s*/)||[''])[0],trail=(o.raw.match(/\s*$/)||[''])[0];o.n.nodeValue=lead+(lang==='ko'?translations[o.key]:o.key)+trail;});
   document.documentElement.lang=lang==='ko'?'ko':'en';
+  window.seedApplyKo&&window.seedApplyKo(lang);
   document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
   const bubble=document.querySelector('.mascot-bubble');if(bubble)bubble.innerHTML=lang==='ko'?'안녕하세요! 🐮<br>연구실에 대해 물어보세요.':'Moo there! 🐮<br>Ask about our lab.';
   if(save)try{localStorage.setItem(STORAGE,lang)}catch(e){}
@@ -1550,23 +1555,24 @@ document.addEventListener("DOMContentLoaded", function () {
       clean.innerHTML = `
         <div class="seed-contact-grid">
           <div>
-            <h3>Visit</h3>
-            <p><strong>Sunheon Building, Room 306</strong><br>
+            <h3 data-ko="방문">Visit</h3>
+            <p data-ko="<strong>숙명여자대학교 순헌관 306호</strong><br>서울특별시 용산구 청파로47길 100<br>(우편번호 04310)"><strong>Sunheon Building, Room 306</strong><br>
             Sookmyung Women's University<br>
             100 Cheongpa-ro 47-gil, Yongsan-gu,<br>
             Seoul 04310, Republic of Korea</p>
           </div>
           <div>
-            <h3>Contact</h3>
+            <h3 data-ko="연락처">Contact</h3>
             <p><a href="mailto:smwu.neda.lab@gmail.com">smwu.neda.lab@gmail.com</a></p>
             <p><a href="https://www.instagram.com/smwu_neda.lab/" target="_blank" rel="noopener">@smwu_neda.lab</a></p>
             <div class="seed-contact-actions">
-              <a class="btn btn-primary" href="https://pf.kakao.com/" target="_blank" rel="noopener">KakaoTalk</a>
+              <a class="btn btn-primary" href="https://pf.kakao.com/" target="_blank" rel="noopener" data-ko="카카오톡">KakaoTalk</a>
             </div>
           </div>
         </div>
       `;
       container.appendChild(clean);
+      if(window.seedApplyKo)window.seedApplyKo(document.documentElement.lang);
     }
   }
 
