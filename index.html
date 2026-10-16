@@ -1121,11 +1121,24 @@ section:not(.hero) *{border-radius:0!important;box-shadow:none!important}
 #members article,#members .member-card{border:1px solid var(--h-line)!important;background:#fff!important}
 #members article:hover,#members .member-card:hover{border-color:#b7c2ce!important}
 
+/* Publications: no white boxes on the gray band, hairlines only (Harvard-style) */
+#publications .auto-pubs-wrap,#publications .yearbtn,#publications .publication-category-body,#publications .pubs{background:transparent!important}
+#publications .auto-pubs-wrap{border-top:1px solid var(--h-line)!important;border-bottom:1px solid var(--h-line)!important;padding:28px 0!important}
+#publications .yearbtn{border-bottom:1px solid var(--h-line)!important}
+#publications .auto-pub{border-bottom:1px solid var(--h-line)!important}
+#publications .auto-pub a{color:var(--h-navy)!important}
+
 @media(max-width:880px){
   .seed-utility .u-in{padding:6px 20px}.seed-utility .u-right{display:none}
   #top.hero{padding:72px 0 64px!important}
   header .brand-copy small{display:none!important}
 }
+</style>
+<style id="seed-hero-motion">
+/* Hero: particle network canvas under the text */
+#top.hero{position:relative!important;overflow:hidden!important;isolation:isolate}
+#top.hero > .container{position:relative;z-index:2}
+.hero-net{position:absolute;inset:0;pointer-events:none;z-index:1;width:100%;height:100%}
 </style>
 </head><body>
 <div class="seed-utility"><div class="u-in"><span class="u-left"><a href="https://www.sookmyung.ac.kr" target="_blank" rel="noopener">Sookmyung Women's University</a> · Department of Food and Nutrition</span><span class="u-right">Seoul, Korea</span></div></div>
@@ -1602,4 +1615,41 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 </script>
 
+<script id="seed-hero-motion-js">
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var hero=document.querySelector('#top.hero');if(!hero)return;
+        var cv=document.createElement('canvas');cv.className='hero-net';cv.setAttribute('aria-hidden','true');
+    hero.insertBefore(cv,hero.firstChild);
+    var ctx=cv.getContext('2d');if(!ctx)return;
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W,H,dpr,pts=[],mouse={x:-9999,y:-9999},LINK=130,running=true,visible=true;
+    function size(){
+      dpr=Math.min(window.devicePixelRatio||1,2);W=hero.clientWidth;H=hero.clientHeight;
+      cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+      var n=Math.round(Math.min(W<700?40:95,W*H/13000));
+      pts=[];for(var i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.4+.8,g:Math.random()<.18});
+    }
+    function frame(){
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<pts.length;i++){var p=pts[i];
+        if(!reduce){p.x+=p.vx;p.y+=p.vy;if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10;}
+        for(var j=i+1;j<pts.length;j++){var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=dx*dx+dy*dy;
+          if(d<LINK*LINK){ctx.strokeStyle='rgba(190,210,235,'+(.16*(1-Math.sqrt(d)/LINK))+')';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}}
+        var mx=p.x-mouse.x,my=p.y-mouse.y,md=mx*mx+my*my;
+        if(md<170*170){ctx.strokeStyle='rgba(217,189,132,'+(.35*(1-Math.sqrt(md)/170))+')';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+        ctx.fillStyle=p.g?'rgba(217,189,132,.85)':'rgba(220,232,245,.6)';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fill();
+      }
+      if(running&&visible&&!reduce)requestAnimationFrame(frame);
+    }
+    function start(){if(!reduce&&running&&visible)requestAnimationFrame(frame);}
+    size();frame();
+    window.addEventListener('resize',function(){size();if(reduce)frame();});
+    hero.addEventListener('mousemove',function(e){var r=hero.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+    hero.addEventListener('mouseleave',function(){mouse.x=mouse.y=-9999;});
+    if('IntersectionObserver' in window)new IntersectionObserver(function(en){var v=en[0].isIntersecting;if(v&&!visible){visible=true;start();}visible=v;}).observe(hero);
+    document.addEventListener('visibilitychange',function(){var r=!document.hidden;if(r&&!running){running=true;start();}running=r;});
+  });
+})();
+</script>
 </body></html>
