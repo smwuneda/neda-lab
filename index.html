@@ -1121,6 +1121,8 @@ section:not(.hero) *{border-radius:0!important;box-shadow:none!important}
 #members article,#members .member-card{border:1px solid var(--h-line)!important;background:#fff!important}
 #members article:hover,#members .member-card:hover{border-color:#b7c2ce!important}
 
+/* News: hide the empty-state box once posts exist */
+#photoEmpty[hidden],#photoBoardStatus[hidden]{display:none!important}
 /* Publications: no white boxes on the gray band, hairlines only (Harvard-style) */
 #publications .auto-pubs-wrap,#publications .yearbtn,#publications .publication-category-body,#publications .pubs{background:transparent!important}
 #publications .auto-pubs-wrap{border-top:1px solid var(--h-line)!important;border-bottom:1px solid var(--h-line)!important;padding:28px 0!important}
@@ -1144,6 +1146,70 @@ section:not(.hero) *{border-radius:0!important;box-shadow:none!important}
 /* Elements with data-ko="..." show that HTML in Korean and their original HTML in English. */
 window.seedApplyKo=function(lang){document.querySelectorAll('[data-ko]').forEach(function(e){if(e.dataset.en===undefined)e.dataset.en=e.innerHTML;e.innerHTML=lang==='ko'?e.dataset.ko:e.dataset.en;});};
 </script>
+<style id="seed-news-refresh">
+/* ===== News: featured story + clean grid (Harvard-style) ===== */
+#news .news-board-layout{display:block!important}
+#news .news-filter-panel{position:static!important;display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:4px 28px!important;min-height:0!important;border:0!important;border-bottom:1px solid var(--h-line)!important;padding:0!important;margin:0 0 36px!important}
+#news .news-filter-panel button{width:auto!important;padding:12px 0!important;margin-bottom:-1px;border-bottom:2px solid transparent!important;font-size:13px!important;font-weight:600!important;color:var(--h-muted)!important;letter-spacing:.01em}
+#news .news-filter-panel button:hover{color:var(--h-navy)!important}
+#news .news-filter-panel button.active{color:var(--h-navy)!important;font-weight:700!important;border-bottom-color:var(--h-gold)!important}
+#news .news-filter-panel button[hidden]{display:none!important}
+#news .photo-board{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:44px 32px!important}
+#news .photo-post{border:0!important;background:transparent!important;cursor:pointer;outline:none}
+#news .photo-post-media{height:auto!important;aspect-ratio:4/3;background:#e9edf2!important;overflow:hidden;margin-bottom:18px}
+#news .photo-post-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+#news .photo-post:hover .photo-post-media img,#news .photo-post:focus-visible .photo-post-media img{transform:scale(1.045)}
+#news .photo-post-copy{padding:0!important}
+#news .np-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:11.5px;letter-spacing:.06em}
+#news .news-card-category{background:transparent!important;color:var(--h-gold)!important;padding:0!important;margin:0!important;font-size:11px!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.12em}
+#news .photo-post-date{display:inline!important;margin:0!important;color:#7b8794!important;font-weight:600!important;font-size:11.5px!important}
+#news .np-meta .photo-post-date::before{content:"";display:inline-block;width:1px;height:10px;background:#c5ccd5;margin:0 10px 0 0;vertical-align:-1px}
+#news .photo-post-copy h3{font-family:var(--serif)!important;font-size:20px!important;line-height:1.38!important;font-weight:600!important;color:var(--h-navy)!important;margin:0 0 10px!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#news .photo-post:hover h3{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+#news .photo-post-copy p{display:none}
+#news .np-more{display:none;font-size:12.5px;font-weight:700;color:var(--h-navy);letter-spacing:.02em}
+#news .np-more span{display:inline-block;transition:transform .25s}
+#news .photo-post:hover .np-more span{transform:translateX(4px)}
+/* featured (newest) story */
+#news .photo-post.is-featured{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:48px;align-items:center;padding-bottom:44px;border-bottom:1px solid var(--h-line)!important}
+#news .is-featured .photo-post-media{aspect-ratio:16/10;margin:0}
+#news .is-featured .photo-post-copy h3{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.3!important;-webkit-line-clamp:4;margin-bottom:16px!important}
+#news .is-featured .photo-post-copy p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;font-size:15px!important;line-height:1.75!important;color:var(--h-muted)!important;margin:0 0 22px!important}
+#news .is-featured .np-more{display:inline-block}
+#news .photo-load-more{margin:52px auto 0!important;background:transparent!important;border:1px solid var(--h-navy)!important;color:var(--h-navy)!important;padding:13px 30px!important;font-size:13px!important;font-weight:700!important;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s}
+#news .photo-load-more:hover{background:var(--h-navy)!important;color:#fff!important}
+@media(max-width:980px){#news .photo-board{grid-template-columns:repeat(2,minmax(0,1fr))!important}#news .photo-post.is-featured{grid-template-columns:1fr;gap:22px}}
+@media(max-width:640px){#news .photo-board{grid-template-columns:1fr!important;gap:36px!important}#news .news-filter-panel{flex-wrap:nowrap;overflow-x:auto;gap:22px!important;margin-bottom:26px!important}}
+/* one font family for news titles so Latin and Hangul match */
+#news .photo-post-copy h3,.news-article-card h1{font-family:"Pretendard",Inter,"Apple SD Gothic Neo",sans-serif!important;font-weight:700!important;letter-spacing:-.015em!important}
+#news .photo-post-copy h3{font-size:19px!important;line-height:1.45!important}
+#news .is-featured .photo-post-copy h3{font-size:clamp(24px,2.4vw,30px)!important;line-height:1.35!important}
+html[lang="ko"] #news .photo-post-copy h3,html[lang="ko"] #news .photo-post-copy p{word-break:keep-all}
+#news .photo-post-media img[data-fit="contain"]{object-fit:contain!important;padding:4%;box-sizing:border-box;background:#f3f1ec}
+#news .photo-post:hover .photo-post-media img[data-fit="contain"]{transform:scale(1.02)}
+/* ===== News article page ===== */
+.news-detail-modal{background:#fff!important}
+.news-article-page{width:min(860px,calc(100% - 40px))!important;padding:28px 0 90px!important}
+.news-article-top{border-bottom:1px solid var(--h-line);padding-bottom:16px;margin-bottom:48px!important}
+.news-article-bottom{border-top:1px solid var(--h-line);padding-top:18px;margin-top:56px!important}
+.news-article-back{font-size:13px!important;color:var(--h-navy)!important;padding:0!important}
+.news-article-back:hover{text-decoration:underline}
+.news-article-brand{color:#7b8794;font-weight:700}
+.news-article-card{border:0!important;padding:0!important;border-radius:0!important}
+.news-article-meta{gap:10px!important;font-size:12.5px!important;color:#7b8794;letter-spacing:.04em;margin-bottom:18px!important}
+.news-article-card h1{font-family:var(--serif)!important;font-weight:600!important;font-size:clamp(28px,3.6vw,40px)!important;line-height:1.28!important;color:var(--h-navy)!important;margin-bottom:26px!important;letter-spacing:-.01em}
+.news-detail-text{font-size:16.5px!important;line-height:1.9!important;color:#2e3a47!important;margin-bottom:40px!important;max-width:720px}
+html[lang="ko"] .news-detail-text{word-break:keep-all}
+.news-inline-gallery{grid-template-columns:repeat(2,1fr)!important;gap:12px!important}
+.news-inline-gallery .news-inline-photo:only-child{grid-column:1/-1}
+.news-inline-photo{padding:0!important;overflow:hidden;background:#eef1f4!important}
+.news-inline-gallery{align-items:start}
+.news-inline-photo img{aspect-ratio:auto!important;height:auto!important;object-fit:contain!important;display:block;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.news-inline-photo:hover img{transform:scale(1.03)}
+.news-detail-tags{margin-top:34px!important}
+.news-detail-tags span{text-decoration:none!important;display:inline-block;color:var(--h-gold);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;border-top:2px solid var(--h-gold);padding-top:8px}
+@media(max-width:640px){.news-inline-gallery{grid-template-columns:1fr!important}}
+</style>
 </head><body>
 <div class="seed-utility"><div class="u-in"><span class="u-left"><a href="https://www.sookmyung.ac.kr" target="_blank" rel="noopener">Sookmyung Women's University</a> · Department of Food and Nutrition</span><span class="u-right">Seoul, Korea</span></div></div>
 <header><div class="nav-wrap"><a class="brand" href="#top"><span class="brand-copy"><strong>SEED LAB</strong><small><span class="seed-acronym"><strong>S</strong>tatistical <strong>E</strong>pidemiology of <strong>E</strong>xposures &amp; <strong>D</strong>iet</span></small></span></a><button aria-label="Open menu" class="menu-toggle">☰</button><nav aria-label="Primary navigation"><ul><li><a href="#about"><span class="nav-label">About</span></a></li><li class="nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">Research</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu"><a href="#research">Research Areas</a><a href="#projects">Projects</a></div></li><li class="nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">People</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu"><a href="#professor">Professor</a><a href="#members">Members</a><a href="#alumni">Alumni</a></div></li><li><a href="#publications"><span class="nav-label">Publications</span></a></li><li class="nav-dropdown news-nav-dropdown"><button aria-expanded="false" class="nav-dropdown-trigger" type="button"><span class="nav-label">News</span><span aria-hidden="true">⌄</span></button><div class="nav-dropdown-menu news-dropdown-menu"><a data-news-category="All" href="#news">All News</a><a data-news-category="Announcements" href="#news">Announcements</a><a data-news-category="Awards" href="#news">Awards</a><a data-news-category="Celebrations" href="#news">Celebrations</a><a data-news-category="Events" href="#news">Events</a><a data-news-category="Media" href="#news">Media</a><a data-news-category="Presentations" href="#news">Presentations</a></div></li><li><a href="#contact"><span class="nav-label">Contact</span></a></li></ul></nav><div aria-label="Language" class="language-switch"><button data-lang="ko">KR</button><button class="active" data-lang="en">EN</button></div></div></header>
@@ -1216,7 +1282,7 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
  const translations={"Research Lab":"연구실","Evidence for healthier lives.":"더 건강한 삶을 위한 근거","Research domains":"연구 분야","Scholarly outputs":"학술 성과","Current members":"현재 구성원","Research Areas":"연구 분야","People":"구성원","Quick Links":"바로가기","Contact":"연락처","Instagram":"인스타그램","KakaoTalk":"카카오톡","Home": "홈", "Professor": "교수", "Members": "구성원", "Alumni": "졸업생", "Research": "연구", "Publications": "연구성과", "Projects": "연구과제", "Photo": "소식", "News & Activities": "소식", "Contact / Location": "연락처 / 위치", "Nutritional Epidemiology · Data Analysis": "영양역학 · 데이터 분석", "Dietary exposures, nutritional factors, and population health.": "식이 노출, 영양 요인, 인구집단 건강", "Population-based and clinical research in nutritional epidemiology.": "인구집단 및 임상자료를 활용한 영양역학 연구", "Dietary Exposures & Eating Behaviors": "식이 요인 및 섭식 행동", "Obesity & Body Composition": "비만 및 체성분", "Cardiometabolic Health": "심장대사 건강", "Environmental Exposures & Healthy Aging": "환경 요인 및 건강한 노화", "Population Data & Evidence Synthesis": "인구집단 연구 및 근거 종합", "Welcome to the SEED Lab": "반갑습니다, SEED Lab입니다", "The SEED Lab is based in the Department of Food and Nutrition at Sookmyung Women’s University. We conduct population-based and clinical research using epidemiologic and statistical approaches.": "SEED Lab은 숙명여자대학교 식품영양학과 연구실입니다. 국민건강영양조사 같은 대규모 조사자료와 임상자료를 분석해 먹는 것과 건강 사이의 관계를 밝힙니다.", "Research at a Glance": "주요 연구 분야", "Research across diet, health, and populations.": "식생활과 건강의 관계를 인구집단 단위로 연구합니다.", "Diet · Body · Health · Population": "식이 · 신체 · 건강 · 인구집단", "Dietary Patterns · Ultra-Processed Foods · Meal Timing": "식이 패턴 · 초가공식품 · 식사 시간대", "Cardiovascular Disease · Heart Failure · Diabetes": "심혈관질환 · 심부전 · 당뇨병", "Obesity · Body Composition · 3D Anthropometry": "비만 · 체성분 · 3D 신체계측", "Air Pollution · Sarcopenia · Cognitive Function": "대기오염 · 근감소증 · 인지 기능", "Population-Based Studies · Meta-Analysis · Bibliometrics": "인구집단 연구 · 메타분석 · 서지분석", "Click to add photo": "사진 추가", "Jane Lee, Ph.D.": "이재연 교수", "Email": "이메일", "Education": "학력", "The University of Texas at Austin": "텍사스대학교 오스틴캠퍼스", "Sookmyung Women's University": "숙명여자대학교", "Professional Experience": "주요 경력", "Director of Dietary Information, The Korean Society of Community Nutrition": "이사, 대한지역사회영양학회", "Principal Researcher, Korea National Institute of Health, Korea Disease Control and Prevention Agency (KDCA)": "책임연구원, 질병관리청 국립보건연구원", "Director of Trial Design and Development, Baim Institute for Clinical Research, Boston, MA, USA": "Director of Trial Design and Development, Baim Institute for Clinical Research, Boston, MA, USA", "Research Fellow, Boston Children's Hospital, Boston, MA, USA": "연구원, Boston Children's Hospital, Boston, MA, USA", "Research Fellow, Harvard Medical School, Boston, MA, USA": "연구원, Harvard Medical School, Boston, MA, USA", "Visiting Scientist, Harvard T.H. Chan School of Public Health, Boston, MA, USA": "Visiting Scientist, Harvard T.H. Chan School of Public Health, Boston, MA, USA", "Research Fellow, NIH Framingham Heart Study, Framingham, MA, USA": "연구원, NIH Framingham Heart Study, Framingham, MA, USA", "Current members of the laboratory.": "함께 연구하는 사람들입니다.", "Ph.D. Student": "박사과정", "M.S. Students": "석사과정", "M.S. Student": "석사과정", "Minseo Kim": "김민서", "Bohyun Hwang": "황보현", "Daeun Kim": "김다은", "Yujin Shim": "심유진", "Hyeseon Jeon": "전혜선", "Hyeju Ji": "지혜주", "Research Interests:": "주요 연구 관심 분야:", "Keywords:": "키워드:", "Keywords:": "키워드:", "Sleep · Sugar-Sweetened Beverages · Meta-Analysis": "수면 · 가당음료 · 메타분석", "Nutritional Epidemiology · Nighttime Eating · Ultra-Processed Foods · Dietary Patterns": "영양역학 · 야간 섭취 · 초가공식품 · 식이 패턴", "Fruit Intake · Depression · Metabolic Syndrome (MetS)": "과일 섭취 · 우울증 · 대사증후군(MetS)", "Diabetes Nutrition · AI in Nutrition · Large Language Models": "당뇨 영양 · 영양 분야 AI · 대규모 언어모델", "Personalized Nutrition · Obesity · mHealth Application · Food Recommendation System": "개인맞춤형 영양 · 비만 · 모바일 헬스(mHealth) · 식품 추천 시스템", "Alumni profiles coming soon.": "졸업생 소개는 준비 중입니다.", "We examine modifiable nutritional and environmental determinants of chronic disease and healthy aging using population-based and clinical data.": "만성질환과 건강한 노화에 영향을 주는 식생활과 환경 요인을 조사자료와 임상자료로 연구합니다.", "Research Areas": "연구 분야", "Research Domains": "주요 연구 영역", "Our work spans complementary areas of nutritional and population epidemiology.": "영양역학과 인구집단 역학을 바탕으로 여러 주제를 연구합니다.", "Nutritional Epidemiology": "영양역학", "We investigate dietary exposures, eating behaviors, and dietary patterns in relation to health outcomes.": "무엇을 얼마나, 언제, 어떻게 먹는지가 건강과 어떤 관련이 있는지 봅니다.", "Artificial Sweeteners": "인공감미료", "Ultra-Processed Foods": "초가공식품", "Dietary Patterns": "식이 패턴", "Meal Timing": "식사 시간", "Eating Behaviors": "섭식 행동", "We characterize obesity and body composition using conventional and precision anthropometric measures, including body-shape phenotyping.": "줄자 계측부터 3D 스캐너까지 활용해 비만과 체성분을 평가하고, 체형을 수치로 분석합니다.", "Obesity": "비만", "Body Composition": "체성분", "Body Shape Phenotyping": "체형 특성 분석", "Sarcopenia": "근감소증", "3D Precision Anthropometry": "3D 정밀 신체계측", "Cardiometabolic Epidemiology": "심장대사 역학", "We evaluate nutritional and clinical factors associated with cardiovascular and metabolic outcomes, including heart failure and diabetes.": "심부전, 당뇨병 같은 심혈관·대사질환과 관련된 영양 요인과 임상 요인을 연구합니다.", "Cardiovascular Disease": "심혈관질환", "Heart Failure": "심부전", "Diabetes": "당뇨병", "Cardiometabolic Outcomes": "심장대사 건강", "Mortality": "사망", "Environmental & Aging Epidemiology": "환경 및 노화 역학", "We examine environmental exposures and aging-related outcomes, including particulate matter, sarcopenia, and cognitive function.": "미세먼지 같은 환경 요인이 근감소증, 인지 기능 등 노화와 관련된 건강에 주는 영향을 연구합니다.", "Particulate Matter": "미세먼지", "Cognitive Function": "인지 기능", "Healthy Aging": "건강한 노화", "Middle-Aged & Older Adults": "중년 및 노년층", "Population-Based Research & Evidence Synthesis": "인구집단 연구 및 근거 종합", "We analyze population and clinical data and synthesize evidence across studies using meta-analytic and bibliometric approaches.": "국내외 조사자료와 임상자료를 분석하고, 체계적 문헌고찰·메타분석·서지분석으로 여러 연구 결과를 종합합니다.", "KNHANES": "국민건강영양조사(KNHANES)", "KoGES": "한국인유전체역학조사(KoGES)", "NHANES": "미국 국민건강영양조사(NHANES)", "Clinical Data": "임상자료", "Systematic Reviews": "체계적 문헌고찰", "Meta-Analysis": "메타분석", "Bibliometrics": "서지분석", "Research Direction": "연구 방향", "From Population Evidence to Personalized Health": "인구집단 근거에서 개인맞춤형 건강관리로", "We move from identifying population-level patterns to characterizing individual risk and translating evidence into more targeted nutrition and health strategies.": "집단 전체에서 건강 패턴과 위험요인을 찾고, 이를 한 사람 한 사람에게 맞춘 영양·건강관리로 이어갑니다.", "Population Patterns": "인구집단 수준의 패턴", "Identify patterns in diet, lifestyle, environmental exposures, and health outcomes across populations.": "식생활, 생활습관, 환경 요인과 건강 상태가 집단에서 어떻게 나타나는지 파악합니다.", "Modifiable Risk Factors": "수정 가능한 위험요인", "Determine nutritional, behavioral, clinical, and body-composition factors associated with disease risk.": "질병 위험을 높이거나 낮추는 영양·행동·임상·체성분 요인을 찾습니다.", "Individual Health Profiles": "개인별 건강 프로파일", "Integrate body shape, clinical characteristics, and multidimensional health information to better characterize individual risk.": "체형, 임상 특성, 여러 건강정보를 함께 보고 개인의 건강 상태와 위험 수준을 파악합니다.", "Personalized Prevention": "개인맞춤형 예방", "Translate evidence into personalized nutrition, lifestyle intervention, and chronic disease prevention strategies.": "연구 결과를 개인맞춤형 영양·생활습관 관리와 만성질환 예방에 활용합니다.", "Publications and scholarly outputs by Jane J. Lee, organized by year.": "이재연 교수의 논문과 학술 성과를 연도별로 모았습니다.", "Publications and scholarly outputs by Jane J. Lee, organized by research area.": "이재연 교수의 논문과 학술 성과를 연구 분야별로 모았습니다.",
     "92 publications & scholarly outputs · 2010–2026": "92편의 논문 및 학술 성과 · 2010–2026", "Current research projects undertaken by the laboratory.": "지금 진행하고 있는 연구과제입니다.", "Ongoing Project · March 2026–February 2029": "진행 중인 연구과제 · 2026년 3월–2029년 2월", "Development of a Next-Generation Personalized Nutrition and Health Management System Using AI and 3D-Based Precision Anthropometry": "AI와 3D 정밀 신체계측을 활용한 차세대 개인맞춤형 영양·건강관리 시스템 개발", "This project aims to develop and clinically validate a next-generation personalized nutrition and health management system that integrates AI-based analysis, three-dimensional precision anthropometry, and multidimensional health data. The system will provide personalized nutrition and lifestyle strategies based on individual body shape and health characteristics, and its effectiveness will be evaluated through a 12-month randomized controlled trial among adults with obesity.": "AI 분석과 3D 정밀 신체계측, 여러 건강정보를 결합한 개인맞춤형 영양·건강관리 시스템을 개발합니다. 개인의 체형과 건강 특성에 맞춘 영양·생활습관 전략을 제시하고, 비만 성인을 대상으로 12개월 무작위대조시험을 진행해 효과를 검증합니다.", "YEAR 1 · 2026": "1차년도 · 2026", "Precision Anthropometric Data and Body Shape Phenotyping": "정밀 신체계측 자료 구축 및 체형 특성 분석", "Establish a standardized three-dimensional whole-body scanning system and construct a precision anthropometric dataset of adults with obesity. Apply AI-based clustering to define body shape types and develop novel quantitative and visual body shape indicators that complement conventional BMI-based classification. Prepare the study protocol and personalized intervention strategy for the subsequent randomized controlled trial.": "비만 성인을 대상으로 표준화된 3D 전신 스캐닝 체계를 구축하고 정밀 신체계측 자료를 수집합니다. AI 기반 군집분석을 통해 체형 유형을 분류하고, 기존 BMI 중심의 비만 분류를 보완할 수 있는 새로운 정량적·시각적 체형 지표를 개발합니다. 이후 무작위대조시험에 활용할 연구 프로토콜과 개인맞춤형 중재 전략을 마련합니다.", "YEAR 2 · 2027": "2차년도 · 2027", "Development of an AI-Based Personalized Intervention": "AI 기반 개인맞춤형 중재 시스템 개발", "Construct a multidimensional Deep Health Profile by integrating three-dimensional anthropometry, dietary intake, lifestyle factors, clinical biomarkers, genetic information, gut microbiome profiles, physical activity, and sleep data. Develop an AI-based personalized nutrition and health feedback system incorporating 3D body visualization and the Health Belief Model. Initiate a 12-month randomized controlled trial and complete the baseline and 6-month follow-up assessments.": "3D 신체계측, 식이섭취, 생활습관, 임상 생체지표, 유전정보, 장내 미생물, 신체활동 및 수면자료를 통합하여 다차원 건강 프로파일(Deep Health Profile)을 구축합니다. 이를 바탕으로 3D 체형 시각화와 건강신념모형(Health Belief Model)을 적용한 AI 기반 개인맞춤형 영양·건강 피드백 시스템을 개발합니다. 이후 12개월 무작위대조시험을 시작하고, 기초조사와 6개월 추적평가를 수행합니다.", "YEAR 3 · 2028": "3차년도 · 2028", "Clinical Evaluation and System Validation": "임상 효과 평가 및 시스템 검증", "Complete the 12-month longitudinal follow-up and evaluate the effects of the personalized intervention on body fat percentage, body shape, metabolic indicators, and health-related behaviors. Identify longitudinal patterns of change in the newly developed body shape indicators and assess the clinical effectiveness and sustainability of the intervention. Finalize the personalized nutrition and health intervention model and feedback algorithm.": "12개월 추적조사를 완료하고 개인맞춤형 중재가 체지방률, 체형, 대사 지표 및 건강 관련 행동에 미치는 영향을 평가합니다. 새롭게 개발한 체형 지표의 시간에 따른 변화 양상을 분석하고, 중재 효과의 지속가능성을 함께 평가합니다. 최종적으로 개인맞춤형 영양·건강 중재 모델과 피드백 알고리즘을 확립합니다.", "Laboratory activities, seminars, and events.": "연구실 활동, 세미나, 주요 행사 기록입니다.", "Research highlights, conference presentations, awards, seminars, and laboratory activities.": "연구 성과, 학회 발표, 수상, 세미나 등 연구실 소식을 전합니다.", "＋ Add Photo Post": "＋ 사진 게시물 추가", "＋ Add News Post": "＋ 소식 추가", "Posts are stored in Google Drive and Google Sheets after the Google Apps Script connection is configured.": "사진 게시물은 Google Drive와 Google Sheets를 통해 관리됩니다.", "No photos have been posted yet.": "아직 등록된 사진이 없습니다.", "No additional news has been posted yet.": "아직 추가로 등록된 소식이 없습니다.", "Published laboratory photos will appear here.": "게시된 연구실 사진이 여기에 표시됩니다.", "Published laboratory news will appear here.": "게시된 연구실 소식이 여기에 표시됩니다.", "Load more": "더 보기", "Visit or contact the Statistical Epidemiology of Exposures and Diet Laboratory.": "연구실 위치와 연락처입니다.", "Laboratory": "연구실", "Soonheon Building, Room 306": "순헌관 306호", "100 Cheongpa-ro 47-gil, Yongsan-gu, Seoul, Republic of Korea": "서울특별시 용산구 청파로47길 100", "Contact": "연락처", "Email:": "이메일:", "Ask on KakaoTalk": "카카오톡 문의", "Statistical Epidemiology of Exposures and Diet Laboratory": "영양역학 및 데이터분석 연구실", "Department of Food and Nutrition, Sookmyung Women's University": "숙명여자대학교 식품영양학과", "100 Cheongpa-ro 47-gil, Yongsan-gu, Seoul 04310, Republic of Korea": "서울특별시 용산구 청파로47길 100, 04310", "Add Photo Post": "사진 게시물 추가", "Add News Post": "소식 추가", "Title": "제목", "Date": "날짜", "Description": "설명", "The image is resized in the browser before upload. The post will appear only after it has been successfully saved to Google.": "이미지는 업로드 전에 브라우저에서 크기가 조정되며, Google에 정상적으로 저장된 후 게시물이 표시됩니다.", "Cancel": "취소", "Publish": "게시", "Edit Site": "사이트 편집", "Editing mode: click text to type, or click an image to replace it.": "편집 모드: 텍스트를 클릭해 수정하거나 이미지를 클릭해 교체할 수 있습니다.", "Import backup": "백업 불러오기", "Export backup": "백업 내보내기", "Reset": "초기화", "Save": "저장", "Epidemiology and Community Nutrition Research": "역학 및 지역사회영양학 연구", "Clinical Trials, Clinical Nutrition, Registry, and COVID-19 Research": "임상시험·임상영양·레지스트리·COVID-19 연구", "Systematic Review and Meta-Analysis Research": "체계적 문헌고찰 및 메타분석 연구", "Anthropometry and Obesity Research": "신체계측 및 비만 연구", "Nutrition Research": "영양 연구", "Faculty News": "교수 소식", "Lab News": "연구실 소식", "Conference": "학회", "Presentation": "발표", "Award": "수상", "Seminar": "세미나", "Category": "분류", "External link (optional)": "외부 링크(선택)", "Jane J. Lee Appointed as a Board Member of the Korean Society of Community Nutrition": "이재연 교수, 대한지역사회영양학회 2026년 신임이사", "Professor Jane J. Lee began serving as a board member of the Korean Society of Community Nutrition in 2026.": "이재연 교수가 2026년 대한지역사회영양학회 이사로 선임되었습니다.", "Read more ↗": "자세히 보기 ↗"};
  Object.assign(translations,{"About":"소개","News":"소식","Principal Investigator":"지도교수","People":"구성원","Scholarly Outputs":"연구성과","Current Research Project":"진행 중인 연구과제","Explore Research":"연구분야 보기","Meet the Team":"구성원 보기","Evidence for healthier lives through population research.":"많은 사람의 데이터에서 더 건강하게 사는 방법을 찾습니다.","Population-based & clinical research":"인구집단 및 임상 연구","Current Research Project":"현재 연구과제","News & Events":"소식 및 행사","All News":"전체 소식","Announcements":"공지","Awards":"수상","Celebrations":"축하","Events":"행사","Media":"미디어","Presentations":"발표","Back to Top ↑":"맨 위로 ↑","Email":"이메일"});
- Object.assign(translations,{"Nutritional Sciences, The University of Texas at Austin":"영양학, 텍사스대학교 오스틴캠퍼스","Statistics, The University of Texas at Austin":"통계학, 텍사스대학교 오스틴캠퍼스","Food and Nutrition, Sookmyung Women's University":"식품영양학, 숙명여자대학교","Sarcopenia · Protein Nutrition · Dietary Patterns · Muscle Health":"근감소증 · 단백질 영양 · 식이 패턴 · 근육 건강","Latest Publications":"최신 논문","Automatically updated from Jane J. Lee’s ORCID-linked scholarly record.":"ORCID에 등록된 논문이 매일 자동으로 반영됩니다.","About the Lab":"연구실 소개","Sookmyung Women's University":"숙명여자대학교","· Department of Food and Nutrition":"· 식품영양학과","Seoul, Korea":"서울","Evidence for healthier lives and communities.":"더 건강한 삶과 공동체를 위한 근거를 만듭니다.","We study how diet, lifestyle, and environmental exposures shape population health, transforming large-scale data into evidence for healthier communities.":"무엇을, 언제, 어떻게 먹는지가 건강에 어떤 영향을 주는지 대규모 데이터로 연구합니다.","Department of Food and Nutrition, Sookmyung Women's University":"숙명여자대학교 식품영양학과"});
+ Object.assign(translations,{"Laboratory news, conference presentations, seminars, awards, and activities.":"연구실 소식과 학회 발표, 세미나, 수상 소식을 전합니다.","Nutritional Sciences, The University of Texas at Austin":"영양학, 텍사스대학교 오스틴캠퍼스","Statistics, The University of Texas at Austin":"통계학, 텍사스대학교 오스틴캠퍼스","Food and Nutrition, Sookmyung Women's University":"식품영양학, 숙명여자대학교","Sarcopenia · Protein Nutrition · Dietary Patterns · Muscle Health":"근감소증 · 단백질 영양 · 식이 패턴 · 근육 건강","Latest Publications":"최신 논문","Automatically updated from Jane J. Lee’s ORCID-linked scholarly record.":"ORCID에 등록된 논문이 매일 자동으로 반영됩니다.","About the Lab":"연구실 소개","Sookmyung Women's University":"숙명여자대학교","· Department of Food and Nutrition":"· 식품영양학과","Seoul, Korea":"서울","Evidence for healthier lives and communities.":"더 건강한 삶과 공동체를 위한 근거를 만듭니다.","We study how diet, lifestyle, and environmental exposures shape population health, transforming large-scale data into evidence for healthier communities.":"무엇을, 언제, 어떻게 먹는지가 건강에 어떤 영향을 주는지 대규모 데이터로 연구합니다.","Department of Food and Nutrition, Sookmyung Women's University":"숙명여자대학교 식품영양학과"});
  const STORAGE='seed-site-lang-v2';
  const originals=[];
  function capture(){
@@ -1231,12 +1297,88 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
   originals.forEach(o=>{if(!o.n.isConnected)return;const lead=(o.raw.match(/^\s*/)||[''])[0],trail=(o.raw.match(/\s*$/)||[''])[0];o.n.nodeValue=lead+(lang==='ko'?translations[o.key]:o.key)+trail;});
   document.documentElement.lang=lang==='ko'?'ko':'en';
   window.seedApplyKo&&window.seedApplyKo(lang);
+  try{document.dispatchEvent(new CustomEvent('seed:lang',{detail:lang}))}catch(e){}
   document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
   const bubble=document.querySelector('.mascot-bubble');if(bubble)bubble.innerHTML=lang==='ko'?'안녕하세요! 🐮<br>연구실에 대해 물어보세요.':'Moo there! 🐮<br>Ask about our lab.';
   if(save)try{localStorage.setItem(STORAGE,lang)}catch(e){}
  }
  document.addEventListener('DOMContentLoaded',()=>{capture();document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>apply(b.dataset.lang));let lang='ko';try{lang=localStorage.getItem(STORAGE)||'ko'}catch(e){}apply(lang,false);});
 })();
+</script>
+<script id="seed-static-news">
+/* Lab news kept in the site itself. Photos live in the news/ folder. Posts are sorted by date automatically. */
+window.SEED_STATIC_NEWS=[
+ {
+  "id": "icola2026",
+  "category": "Awards",
+  "date": "2026-09-12",
+  "title_ko": "ICoLA 2026 포스터 발표, 김민서 박사과정생 Future Talent Award 수상",
+  "title_en": "ICoLA 2026: poster presentation and Future Talent Award for Minseo Kim",
+  "description_ko": "2026년 9월 10~12일 콘래드 서울에서 열린 제15회 국제지질동맥경화학술대회(ICoLA 2026)에 연구실 구성원들이 함께 참석해 포스터를 발표했습니다. 김민서 박사과정생은 'From measurement to motivation: an integrated framework connecting 3D anthropometry, AI-driven phenotyping, and behavioral theory for precision obesity intervention'으로 Future Talent Award를 받았습니다. 3D 신체계측, AI 기반 비만 표현형 분석, 행동 이론을 하나로 묶어 개인맞춤형 비만 중재의 틀을 제안한 연구입니다.",
+  "description_en": "SEED Lab members attended ICoLA 2026, the 15th International Congress on Lipid and Atherosclerosis, held September 10-12, 2026, at Conrad Seoul. Ph.D. student Minseo Kim received the Future Talent Award for her poster 'From measurement to motivation: an integrated framework connecting 3D anthropometry, AI-driven phenotyping, and behavioral theory for precision obesity intervention,' which brings together 3D anthropometry, AI-driven obesity phenotyping, and behavioral theory for precision obesity intervention.",
+  "gallery": [
+   {
+    "url": "news/2026-icola-award-2.jpg"
+   },
+   {
+    "url": "news/2026-icola-award-1.jpg"
+   },
+   {
+    "url": "news/2026-icola-1.jpg"
+   }
+  ],
+  "coverFit": "contain"
+ },
+ {
+  "id": "nutrition2026",
+  "category": "Presentations",
+  "date": "2026-07-25",
+  "title_ko": "NUTRITION 2026 (미국영양학회) 포스터 발표",
+  "title_en": "Poster presentation at NUTRITION 2026",
+  "description_ko": "2026년 7월 25~28일 미국 메릴랜드주 내셔널하버에서 열린 미국영양학회 연례학술대회(NUTRITION 2026)에서 김민서 박사과정생이 포스터를 발표했습니다. 발표 연제는 'Association of Sugar-Sweetened Beverage Consumption With Observed Sleep Apnea and Perceived Stress Among Korean Adults Aged 40 Years and Older: Analysis of KNHANES 2019-2023'으로, 40세 이상 한국 성인에서 가당음료 섭취와 수면무호흡, 스트레스 인지의 관계를 국민건강영양조사 자료로 분석했습니다.",
+  "description_en": "Ph.D. student Minseo Kim presented a poster at NUTRITION 2026, the annual meeting of the American Society for Nutrition, held July 25-28, 2026, in National Harbor, Maryland. The poster, 'Association of Sugar-Sweetened Beverage Consumption With Observed Sleep Apnea and Perceived Stress Among Korean Adults Aged 40 Years and Older: Analysis of KNHANES 2019-2023,' used KNHANES data to examine these relationships.",
+  "gallery": [
+   {
+    "url": "news/2026-asn-1.jpg"
+   },
+   {
+    "url": "news/2026-asn-2.jpg"
+   }
+  ]
+ },
+ {
+  "id": "kfn2025",
+  "category": "Presentations",
+  "date": "2025-10-29",
+  "title_ko": "2025 한국식품영양과학회 국제심포지엄 포스터 발표",
+  "title_en": "Poster presentation at the 2025 KFN International Symposium",
+  "description_ko": "2025년 10월 29~31일 부산 벡스코에서 열린 한국식품영양과학회 국제심포지엄 및 정기학술대회에서 김민서 박사과정생이 'A Quarter Century of Menopausal Women's Sleep Health Research Trends: A Comparative Analysis of ClinicalTrials.gov Across Regions'를 포스터로 발표했습니다. 지난 25년간 등록된 폐경 여성 수면 건강 임상연구를 지역별로 비교한 연구입니다.",
+  "description_en": "Ph.D. student Minseo Kim presented the poster 'A Quarter Century of Menopausal Women's Sleep Health Research Trends: A Comparative Analysis of ClinicalTrials.gov Across Regions' at the 2025 International Symposium and Annual Meeting of the Korean Society of Food Science and Nutrition (KFN), held October 29-31, 2025, at BEXCO in Busan.",
+  "coverPos": "center top",
+  "gallery": [
+   {
+    "url": "news/2025-kfn-1.jpg"
+   }
+  ]
+ },
+ {
+  "id": "nutrition2025",
+  "category": "Presentations",
+  "date": "2025-05-31",
+  "title_ko": "NUTRITION 2025 (미국영양학회) 포스터 2편 발표",
+  "title_en": "Two posters at NUTRITION 2025",
+  "description_ko": "2025년 5월 31일~6월 3일 미국 플로리다주 올랜도에서 열린 미국영양학회 연례학술대회(NUTRITION 2025)에서 포스터 2편을 발표했습니다. 하나는 인공감미료 섭취와 심혈관대사 질환의 관계를 정리한 체계적 문헌고찰·메타분석('Association of Artificial Sweetener Intake With Cardiometabolic Outcomes: A Systematic Review and Meta-Analysis')이고, 다른 하나는 2014-2023년 섭식장애 연구가 받은 대중적 관심과 학술적 인용을 분석한 서지분석 연구('Attention and Citations in Eating Disorder Research: A Decade of Bibliometric Analysis (2014-2023)')입니다.",
+  "description_en": "SEED Lab presented two posters at NUTRITION 2025, the annual meeting of the American Society for Nutrition, held May 31-June 3, 2025, in Orlando, Florida: 'Association of Artificial Sweetener Intake With Cardiometabolic Outcomes: A Systematic Review and Meta-Analysis' and 'Attention and Citations in Eating Disorder Research: A Decade of Bibliometric Analysis (2014-2023).'",
+  "gallery": [
+   {
+    "url": "news/2025-asn-1.jpg"
+   },
+   {
+    "url": "news/2025-asn-2.jpg"
+   }
+  ]
+ }
+];
 </script>
 <script>
 (function(){
@@ -1251,6 +1393,12 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
   const escapeHTML=value=>String(value ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const formatPostDate=value=>{const raw=String(value||'');const match=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);return match?match[1]+'-'+match[2]+'-'+match[3]:raw;};
   const galleryOf=post=>Array.isArray(post.gallery)&&post.gallery.length?post.gallery:(Array.isArray(post.imageUrls)&&post.imageUrls.length?post.imageUrls.map(url=>({url})):post.imageUrl?[{url:post.imageUrl}]:[]);
+  const LANG=()=>document.documentElement.lang==='en'?'en':'ko';
+  const T=(post,f)=>(post&&(post[f+'_'+LANG()]||post[f]))||'';
+  const CAT_KO={All:'전체 소식',Announcements:'공지',Awards:'수상',Celebrations:'축하',Events:'행사',Media:'미디어',Presentations:'발표'};
+  const catLabel=c=>LANG()==='ko'?(CAT_KO[c]||c):(c==='All'?'All News':c);
+  const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const niceDate=v=>{const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})/);if(!m)return String(v||'');return LANG()==='en'?MON[+m[2]-1]+' '+(+m[3])+', '+m[1]:m[1]+'.'+m[2]+'.'+m[3];};
   const excerpt=value=>{const text=String(value||'').trim().replace(/\s+/g,' ');return text.length>110?text.slice(0,110)+'…':text;};
 
   let activeCarousel={post:null,index:0};
@@ -1276,7 +1424,7 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
       const n=((i%total)+total)%total;
       box.dataset.index=n;
       el('newsLightboxImage').src=images[n].url;
-      el('newsLightboxImage').alt=(post.title||'News photo')+' '+(n+1);
+      el('newsLightboxImage').alt=(T(post,'title')||'News photo')+' '+(n+1);
       el('newsLightboxCount').textContent=(n+1)+' / '+total;
     };
     box.querySelector('.prev').onclick=e=>{e.stopPropagation();show(Number(box.dataset.index)-1)};
@@ -1302,7 +1450,7 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
       button.setAttribute('aria-label',(i+1)+'번째 사진 크게 보기');
       const img=document.createElement('img');
       img.src=item.url;
-      img.alt=(post.title||'News photo')+' '+(i+1);
+      img.alt=(T(post,'title')||'News photo')+' '+(i+1);
       img.loading=i<3?'eager':'lazy';
       img.decoding='async';
       button.appendChild(img);
@@ -1325,12 +1473,12 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
   function openModal(post){
     ensureModal();
     const images=galleryOf(post);
-    el('newsDetailTitle').textContent=post.title||'News';
-    el('newsDetailDate').textContent=formatPostDate(post.date||'');
+    el('newsDetailTitle').textContent=T(post,'title')||'News';
+    el('newsDetailDate').textContent=niceDate(post.date||'');
     el('newsDetailAuthor').textContent=post.author||'SEED Lab';
-    el('newsDetailText').textContent=post.description||'';
+    el('newsDetailText').textContent=T(post,'description');
     const category=post.category||'Events';
-    el('newsDetailTags').innerHTML='<span>'+escapeHTML(category)+'</span>';
+    el('newsDetailTags').innerHTML='<span>'+escapeHTML(catLabel(category))+'</span>';
     renderNewsCarousel(post,0);
     el('newsDetailModal').classList.add('open');
     document.body.style.overflow='hidden';
@@ -1361,8 +1509,10 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
     });
     panel.querySelectorAll('button[data-category]').forEach(button=>{
       const category=button.dataset.category;
-      const base=category==='All'?'All News':category;
-      button.textContent=base+' ('+(counts[category]||0)+')';
+      const base=catLabel(category);
+      button.textContent=base;
+      button.hidden=category!=='All'&&!(counts[category]>0);
+      button.dataset.count=counts[category]||0;
     });
   }
   function renderCurrentNews(){
@@ -1375,17 +1525,20 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
     const posts=selectedNewsCategory==='All'
       ? filtered.slice(0,visibleNewsCount)
       : filtered;
-    posts.forEach(post=>{
+    posts.forEach((post,idx)=>{
       const images=galleryOf(post);
       const imageUrl=escapeHTML((images[0]&&images[0].url)||'');
-      const title=escapeHTML(post.title||'Laboratory News');
+      const title=escapeHTML(T(post,'title')||'Laboratory News');
       const date=escapeHTML(formatPostDate(post.date));
-      const description=escapeHTML(excerpt(post.description||''));
+      const description=escapeHTML(excerpt(T(post,'description')));
       const article=document.createElement('article');
-      article.className='photo-post photo-post-clickable';
+      article.className='photo-post photo-post-clickable'+(idx===0?' is-featured':'');
+      article.tabIndex=0;
+      article.addEventListener('keydown',e=>{if(e.key==='Enter')openModal(post);});
       const category=normalizedCategory(post);
       article.dataset.category=category;
-      article.innerHTML=(imageUrl?'<div class="photo-post-media"><img alt="'+title+'" loading="lazy" decoding="async" src="'+imageUrl+'"></div>':'<div class="photo-post-media"></div>')+'<div class="photo-post-copy">'+(date?'<span class="photo-post-date">'+date+'</span>':'')+'<span class="news-card-category">'+escapeHTML(category)+'</span><h3>'+title+'</h3>'+(description?'<p>'+description+'</p>':'')+'</div>';
+      const more=LANG()==='en'?'Read more':'자세히 보기';
+      article.innerHTML=(imageUrl?'<div class="photo-post-media"><img alt="'+title+'" loading="lazy" decoding="async" src="'+imageUrl+'"'+(post.coverPos?' style="object-position:'+escapeHTML(post.coverPos)+'"':'')+(post.coverFit?' data-fit="'+escapeHTML(post.coverFit)+'"':'')+'></div>':'<div class="photo-post-media is-empty"></div>')+'<div class="photo-post-copy"><div class="np-meta"><span class="news-card-category">'+escapeHTML(catLabel(category))+'</span>'+(date?'<span class="photo-post-date">'+escapeHTML(niceDate(post.date))+'</span>':'')+'</div><h3>'+title+'</h3>'+(description?'<p>'+description+'</p>':'')+'<span class="np-more">'+more+' <span aria-hidden="true">→</span></span></div>';
       article.addEventListener('click',()=>openModal(post));
       board.appendChild(article);
     });
@@ -1395,33 +1548,29 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
     if(more){
       const canShowMore=selectedNewsCategory==='All' && visibleNewsCount<filtered.length;
       more.style.display=canShowMore?'block':'none';
-      more.textContent='더 보기';
+      more.textContent=LANG()==='en'?'More news':'소식 더 보기';
     }
   }
   function status(text,visible=true){const n=el('photoBoardStatus');if(!n)return;n.textContent=text||'';n.hidden=!visible;}
   async function load(){
     if(loading) return;
     const url=endpoint();
-    if(!url){status('',false);if(el('photoLoadMore'))el('photoLoadMore').style.display='none';return;}
+    const staticPosts=Array.isArray(window.SEED_STATIC_NEWS)?window.SEED_STATIC_NEWS:[];
+    const show=list=>{const seen=new Set();allNewsPosts=list.filter(p=>{const k=p&&p.id;if(!k)return true;if(seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>postTime(b)-postTime(a));selectedNewsCategory='All';visibleNewsCount=INITIAL_POST_COUNT;const panel=el('newsFilterPanel');if(panel)panel.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.category==='All'));updateFilterCounts();renderCurrentNews();};
+    if(staticPosts.length)show(staticPosts);
+    if(!url){status('',false);if(!staticPosts.length&&el('photoLoadMore'))el('photoLoadMore').style.display='none';return;}
     loading=true;
-    status('Loading news posts…',true);
+    if(!staticPosts.length)status('Loading news posts…',true);
     try{
       const join=url.includes('?')?'&':'?';
       const response=await fetch(url+join+'action=list&offset=0&limit='+LOAD_LIMIT,{redirect:'follow',cache:'no-store'});
       if(!response.ok) throw new Error('network');
       const data=await response.json();
       if(!data.ok) throw new Error(data.error||'server');
-      allNewsPosts=(Array.isArray(data.posts)?data.posts:[]).slice().sort((a,b)=>postTime(b)-postTime(a));
-      selectedNewsCategory='All';
-      visibleNewsCount=INITIAL_POST_COUNT;
-      const panel=el('newsFilterPanel');
-      if(panel)panel.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.category==='All'));
-      updateFilterCounts();
-      renderCurrentNews();
+      show((Array.isArray(data.posts)?data.posts:[]).concat(staticPosts));
       status('',false);
     }catch(error){
-      status('News posts could not be loaded. Please check the site connection.',true);
-      if(el('photoLoadMore'))el('photoLoadMore').style.display='none';
+      if(staticPosts.length){status('',false);}else{status('News posts could not be loaded. Please check the site connection.',true);if(el('photoLoadMore'))el('photoLoadMore').style.display='none';}
     }finally{loading=false;}
   }
   const filterPanel=el('newsFilterPanel');
@@ -1436,12 +1585,13 @@ document.querySelectorAll('.publication-category-btn').forEach((b)=>{
     });
   }
   el('photoLoadMore')&&el('photoLoadMore').addEventListener('click',()=>{
-    visibleNewsCount+=INITIAL_POST_COUNT;
+    visibleNewsCount+=3;
     renderCurrentNews();
   });
   window.addEventListener('neda:pagechange',event=>{if(event.detail==='photo')load();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape') closeModal();});
   window.addEventListener('popstate',()=>{if(!location.hash.startsWith('#news-')) closeModal();});
+  document.addEventListener('seed:lang',()=>{updateFilterCounts();renderCurrentNews();});
   ensureModal();
   load(true);
 })();
